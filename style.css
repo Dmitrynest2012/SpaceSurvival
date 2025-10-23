@@ -1,0 +1,157 @@
+html,body{height:100%;margin:0;overflow:hidden;background:#000}
+#overlay{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  color:#ddd;font-family:Inter,system-ui,Arial;z-index:10;
+  cursor:pointer;flex-direction:column;
+  background:radial-gradient(ellipse at center, rgba(255,255,255,0.02), transparent 40%);
+}
+#overlay h1{margin:0 0 8px 0;color:#eaf}
+#overlay .info{max-width:720px;text-align:center;color:#cde;margin:0 0 12px}
+.miniNote{font-size:12px;color:#88a;margin:6px 0}
+#hud{
+  position:fixed;left:16px;top:16px;z-index:8;color:#dfefff;font-family:monospace;
+  width:280px;
+}
+.stat{margin:6px 0}
+.label{font-size:12px;opacity:.9}
+.bar{
+  width:100%;height:12px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;
+  box-shadow:inset 0 -2px 6px rgba(0,0,0,0.6);
+}
+.fill{height:100%;width:100%;transform-origin:left;transition:width .08s linear;}
+.bar.food .fill{background:linear-gradient(90deg,#f5d76e,#f08);}
+.bar.water .fill{background:linear-gradient(90deg,#6ee7f5,#06c);}
+.bar.oxygen .fill{background:linear-gradient(90deg,#9ef,#2af);}
+.bar.health .fill{background:linear-gradient(90deg,#ff6b6b,#ee5a52);}
+#statsSmall{margin-top:8px;font-size:13px;color:#bcd}
+#quickSlots{position:fixed;left:16px;bottom:16px;z-index:8;display:flex;gap:8px}
+.quick-slot{
+  width:50px;height:50px;background:rgba(0,20,40,0.8);border:2px solid #444;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:20px;color:#aaa;
+  cursor:pointer;transition:all 0.2s;position:relative
+}
+.quick-slot:hover{background:rgba(0,20,40,0.9)}
+.quick-slot.selected{background:rgba(245,215,110,0.2);border-color:#f5d76e;box-shadow:0 0 15px #f5d76e}
+#info{position:fixed;right:16px;bottom:16px;color:#9ab;font-family:monospace;font-size:13px;z-index:8}
+#counters{position:fixed;right:16px;top:16px;color:#9ab;font-family:monospace;font-size:13px;z-index:8;text-align:right}
+canvas{display:block}
+#distanceInfo{position:fixed;left:16px;bottom:80px;color:#9ab;font-family:monospace;font-size:13px;z-index:8}
+#interactionHint{
+  position:fixed;left:50%;top:70%;transform:translateX(-50%);
+  color:#fff;font-family:monospace;font-size:14px;z-index:8;text-align:center;
+  background:rgba(0,0,0,0.8);padding:8px 16px;border-radius:8px;display:none;
+  border:2px solid #f5d76e;
+}
+#itemName{
+  position:fixed;left:50%;bottom:30px;transform:translateX(-50%);
+  color:#f5d76e;font-family:monospace;font-size:16px;font-weight:bold;
+  z-index:8;text-align:center;background:rgba(0,0,0,0.7);
+  padding:6px 12px;border-radius:6px;display:none;
+  text-shadow:0 0 10px #f5d76e;
+}
+#gameOver{
+  position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
+  display:none;align-items:center;justify-content:center;flex-direction:column;color:#ff6b6b;
+  font-family:monospace;font-size:24px;z-index:100;text-align:center;
+  cursor: default;
+}
+#gameOver button{
+  margin-top:20px;padding:12px 24px;font-size:18px;background:#2af;color:#000;border:none;
+  border-radius:8px;cursor:pointer;font-family:monospace;
+}
+.gameOverText{font-size:18px;margin:10px 0;color:#ff9;}
+
+/* Инвентарь */
+#inventory{
+  position:fixed;right:-320px;top:50%;transform:translateY(-50%);width:300px;
+  background:rgba(0,10,20,0.95);color:#fff;font-family:monospace;padding:16px;
+  border-radius:8px 0 0 8px;transition:right 0.3s ease;z-index:20;
+  border-left:3px solid #2af;box-shadow:0 0 30px rgba(42,175,255,0.3)
+}
+#inventory.open{right:0}
+#inventory h3{margin:0 0 16px 0;color:#2af;text-align:center;font-size:16px}
+.inventory-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:8px}
+.inventory-slot{
+  width:60px;height:60px;background:rgba(255,255,255,0.1);border:2px solid #444;border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;
+  cursor:pointer;transition:all 0.2s
+}
+.inventory-slot:hover{background:rgba(255,255,255,0.2);border-color:#2af;transform:scale(1.05)}
+.item-count{position:absolute;bottom:2px;right:4px;font-size:11px;color:#fff;background:rgba(0,0,0,0.7);padding:2px 4px;border-radius:4px}
+.item-icon{font-size:24px;margin-bottom:4px}
+.slot-label{font-size:10px;text-align:center;color:#aaa}
+#inventoryToggle{
+  position:absolute;left:-40px;top:16px;width:32px;height:32px;background:rgba(0,10,20,0.95);
+  border:2px solid #2af;border-right:none;border-radius:8px 0 0 8px;color:#2af;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;
+  font-weight:bold;transition:all 0.2s
+}
+#inventoryToggle:hover{background:rgba(42,175,255,0.2)}
+
+/* Крафт */
+#craftMenu{
+  position:fixed;right:-500px;top:50%;transform:translateY(-50%);width:480px;
+  background:rgba(0,10,20,0.95);color:#fff;font-family:monospace;padding:20px;
+  border-radius:8px 0 0 8px;transition:right 0.3s ease;z-index:25;
+  border-left:3px solid #ffaa00;box-shadow:0 0 40px rgba(255,170,0,0.3);
+  height:70%;overflow-y:auto
+}
+#craftMenu.open{right:0}
+#craftMenu h3{color:#ffaa00;margin:0 0 20px 0;text-align:center}
+#craftToggle{
+  position:absolute;left:-40px;top:16px;width:32px;height:32px;background:rgba(0,10,20,0.95);
+  border:2px solid #ffaa00;border-right:none;border-radius:8px 0 0 8px;color:#ffaa00;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;
+  font-weight:bold;transition:all 0.2s
+}
+#craftToggle:hover{background:rgba(255,170,0,0.2)}
+.craft-section{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.craft-list{background:rgba(255,255,255,0.05);padding:15px;border-radius:8px;border:1px solid #444;max-height:300px;overflow-y:auto}
+.craft-item{
+  padding:12px;margin-bottom:10px;background:rgba(255,255,255,0.05);border-radius:6px;
+  cursor:pointer;transition:all 0.2s;border:1px solid transparent
+}
+.craft-item:hover{background:rgba(255,170,0,0.1);border-color:#ffaa00}
+.craft-item.selected{background:rgba(255,170,0,0.2);border-color:#ffaa00}
+.craft-item h4{margin:0 0 8px 0;color:#ffaa00;font-size:14px}
+.craft-item .recipe{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.craft-item .material{
+  display:flex;align-items:center;gap:4px;font-size:12px;background:rgba(0,0,0,0.3);
+  padding:4px 8px;border-radius:4px
+}
+.craft-item .material:not(.enough){color:#ff6b6b}
+.craft-item .time{font-size:11px;color:#aaa;margin-top:8px}
+.craft-description{
+  padding:15px;background:rgba(255,255,255,0.05);border-radius:8px;border:1px solid #444
+}
+.craft-description h3{margin:0 0 12px 0;color:#ffaa00;text-align:center}
+.craft-description .result{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.craft-description .result-icon{font-size:40px}
+.craft-description .result-info h4{margin:0;font-size:18px}
+.craft-description .result-info p{margin:4px 0;font-size:12px;color:#aaa}
+.craft-description .materials{list-style:none;padding:0;margin:0}
+.craft-description .materials li{
+  display:flex;justify-content:space-between;padding:6px 0;font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,0.1)
+}
+.craft-description .materials li:last-child{border-bottom:none}
+.craft-description .craft-time{
+  font-size:14px;color:#ffaa00;margin-top:12px;text-align:center;font-weight:bold
+}
+#craftButton{
+  position:relative;bottom:0;left:0;right:0;margin:20px 0 0 0;padding:12px;
+  font-size:16px;background:#ffaa00;color:#000;border:none;border-radius:8px;
+  cursor:pointer;font-family:monospace;font-weight:bold;width:100%
+}
+#craftButton:disabled{background:#666;cursor:not-allowed}
+.craft-instruction{
+  position:fixed;top:20px;right:20px;background:rgba(0,0,0,0.8);color:#fff;
+  padding:15px;border-radius:8px;font-family:monospace;font-size:12px;
+  max-width:300px;z-index:30;display:none;line-height:1.4
+}
+.craft-instruction.show{display:block}
+
+body.inventory-open{cursor:default !important}
+body.craft-open{cursor:default !important}
+body.game-over{cursor:default !important}

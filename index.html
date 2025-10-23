@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Выживание в космосе — улучшенная версия</title>
+<link rel="stylesheet" href="style.css">
+<script src="./external js libraries/three.min.js"></script>
+<script src="./external js libraries/OrbitControls.js"></script>
+<script src="./external js libraries/EffectComposer.js"></script>
+<script src="./external js libraries/RenderPass.js"></script>
+<script src="./external js libraries/ShaderPass.js"></script>
+<script src="./external js libraries/CopyShader.js"></script>
+<script src="./external js libraries/LuminosityHighPassShader.js"></script>
+<script src="./external js libraries/UnrealBloomPass.js"></script>
+</head>
+<body>
+<div id="overlay">
+  <h1>КОСМОС: выживание — улучшенная версия</h1>
+  <div class="info">Кликни чтобы начать (pointer lock). WASD — движение, мышь — смотреть, Space — вверх, Ctrl — вниз.</div>
+  <div class="miniNote">E — собрать | I — инвентарь | Q — крафт | 1,2,3 — быстрые слоты</div>
+  <div class="miniNote">ЛКМ инвентарь → быстрый слот | ЛКМ быстрый слот → использовать | ПКМ → назад в инвентарь</div>
+  <div class="miniNote">R — использовать предмет из быстрого слота | ЛКМ платформа → разместить</div>
+  <div class="miniNote">WASD + Shift = БУСТ ×2 (кислород ×2)</div>
+  <div class="miniNote">Нажми Esc чтобы отпустить курсор</div>
+</div>
+
+<div id="gameOver">
+  <div>ИГРА ОКОНЧЕНА</div>
+  <div class="gameOverText">Здоровье закончилось!</div>
+  <button onclick="restartGame()">НАЧАТЬ ЗАНОВО</button>
+</div>
+
+<div id="hud">
+  <div class="stat">
+    <div class="label">Кислород <span id="oxyVal">100</span>%</div>
+    <div class="bar oxygen"><div class="fill" id="oxyFill" style="width:100%"></div></div>
+  </div>
+  <div class="stat">
+    <div class="label">Еда <span id="foodVal">100</span>%</div>
+    <div class="bar food"><div class="fill" id="foodFill" style="width:100%"></div></div>
+  </div>
+  <div class="stat">
+    <div class="label">Вода <span id="waterVal">100</span>%</div>
+    <div class="bar water"><div class="fill" id="waterFill" style="width:100%"></div></div>
+  </div>
+  <div class="stat">
+    <div class="label">Здоровье <span id="healthVal">100</span>%</div>
+    <div class="bar health"><div class="fill" id="healthFill" style="width:100%"></div></div>
+  </div>
+  <div id="statsSmall">Время: <span id="time">0</span>s</div>
+</div>
+
+<div id="quickSlots">
+  <div class="quick-slot" data-slot="1">1</div>
+  <div class="quick-slot" data-slot="2">2</div>
+  <div class="quick-slot" data-slot="3">3</div>
+</div>
+
+<div id="counters">
+  <div>Кислород: <span id="cO">0</span></div>
+  <div>Еда: <span id="cF">0</span></div>
+  <div>Вода: <span id="cW">0</span></div>
+</div>
+
+<div id="distanceInfo">
+  <div>До планеты: <span id="planetDistance">0</span> км</div>
+  <div>До звезды: <span id="starDistance">0</span> км</div>
+</div>
+
+<div id="interactionHint">Нажми E чтобы собрать</div>
+<div id="itemName"></div>
+
+<!-- Инвентарь -->
+<div id="inventory">
+  <div id="inventoryToggle">I</div>
+  <h3>ИНВЕНТАРЬ</h3>
+  <div class="inventory-grid">
+    <div class="inventory-slot" data-type="oxygen">
+      <div class="item-icon" style="color:#5fdcff">○</div>
+      <div class="slot-label">Кислород</div>
+      <div class="item-count">0</div>
+    </div>
+    <div class="inventory-slot" data-type="food">
+      <div class="item-icon" style="color:#ffaa88">□</div>
+      <div class="slot-label">Еда</div>
+      <div class="item-count">0</div>
+    </div>
+    <div class="inventory-slot" data-type="water">
+      <div class="item-icon" style="color:#88ddff">▽</div>
+      <div class="slot-label">Вода</div>
+      <div class="item-count">0</div>
+    </div>
+    <div class="inventory-slot" data-type="plate">
+      <div class="item-icon" style="color:#ffddaa">⟨</div>
+      <div class="slot-label">Пластина</div>
+      <div class="item-count">0</div>
+    </div>
+    <div class="inventory-slot" data-type="screw">
+      <div class="item-icon" style="color:#ffcc99">✚</div>
+      <div class="slot-label">Шурупы</div>
+      <div class="item-count">0</div>
+    </div>
+    <div class="inventory-slot" data-type="platform">
+      <div class="item-icon" style="color:#ffaa00">⬜</div>
+      <div class="slot-label">Платформа</div>
+      <div class="item-count">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- Крафт -->
+<div id="craftMenu">
+  <div id="craftToggle">Q</div>
+  <h3>КРАФТ</h3>
+  <div class="craft-section">
+    <div class="craft-list">
+      <div class="craft-item selected" data-craft="platform">
+        <h4>Металлическая платформа</h4>
+        <div class="recipe">
+          <div class="material enough">⟨ ×4</div>
+          <div class="material enough">✚ ×8</div>
+        </div>
+        <div class="time">Время: 5 сек</div>
+      </div>
+    </div>
+    <div class="craft-description">
+      <h3>Металлическая платформа</h3>
+      <div class="result">
+        <div class="result-icon" style="color:#ffaa00">⬜</div>
+        <div class="result-info">
+          <h4>Платформа</h4>
+          <p>Стационарная площадка для строительства</p>
+        </div>
+      </div>
+      <ul class="materials">
+        <li><span>Металлическая пластина</span><span id="craftPlate">0/4</span></li>
+        <li><span>Шурупы</span><span id="craftScrew">0/8</span></li>
+      </ul>
+      <div class="craft-time">Время крафта: 5 секунд</div>
+      <button id="craftButton">🔨 КРАФТИТЬ</button>
+    </div>
+  </div>
+</div>
+
+<div class="craft-instruction" id="craftInstruction">
+  <strong>УПРАВЛЕНИЕ:</strong><br>
+  • WASD — движение | Space — вверх | Ctrl — вниз<br>
+  • WASD + Shift = БУСТ ×2 (кислород ×2)<br>
+  • E — собрать | I — инвентарь | Q — крафт<br>
+  • 1,2,3 — быстрые слоты | R — использовать<br>
+  • ЛКМ платформа — разместить в космосе
+</div>
+
+<div id="info">Реалистичная гравитация + буст двигателя + точные расстояния ✓</div>
+
+<script src="script.js"></script>
+</body>
+</html>
