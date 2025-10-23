@@ -9,7 +9,7 @@ function initSpaceMusic() {
   
   // ✅ ПУТИ К ЛОКАЛЬНЫМ ФАЙЛАМ МУЗЫКИ (выберите один!)
   const musicFiles = [
-    './music/1.mp3'      // ☄️ Нулевая гравитация
+    'https://github.com/Dmitrynest2012/SpaceSurvival/blob/main/music/1.mp3'      // ☄️ Нулевая гравитация
   ];
   
   // Берем первый доступный файл
