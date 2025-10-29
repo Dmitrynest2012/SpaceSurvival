@@ -79,7 +79,9 @@ canvas{display:block}
 }
 .inventory-slot:hover{background:rgba(255,255,255,0.2);border-color:#2af;transform:scale(1.05)}
 .item-count{position:absolute;bottom:2px;right:4px;font-size:11px;color:#fff;background:rgba(0,0,0,0.7);padding:2px 4px;border-radius:4px}
-.item-icon{font-size:24px;margin-bottom:4px}
+.item-icon{
+  font-size:24px;margin-bottom:4px;width:100%;height:100%;background-size:contain;background-repeat:no-repeat;background-position:center;
+} /* Добавлено для 3D-рендер иконок как background */
 .slot-label{font-size:10px;text-align:center;color:#aaa}
 #inventoryToggle{
   position:absolute;left:-40px;top:16px;width:32px;height:32px;background:rgba(0,10,20,0.95);

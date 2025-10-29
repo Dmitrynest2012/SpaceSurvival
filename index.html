@@ -6,6 +6,7 @@
 <title>Выживание в космосе — улучшенная версия</title>
 <link rel="stylesheet" href="style.css">
 <script src="./external js libraries/three.min.js"></script>
+<script src="./external js libraries/GLTFLoader.js"></script> <!-- Добавлено для GLB -->
 <script src="./external js libraries/OrbitControls.js"></script>
 <script src="./external js libraries/EffectComposer.js"></script>
 <script src="./external js libraries/RenderPass.js"></script>
@@ -25,10 +26,12 @@
   <div class="miniNote">Нажми Esc чтобы отпустить курсор</div>
 </div>
 
-<div id="gameOver">
-  <div>ИГРА ОКОНЧЕНА</div>
-  <div class="gameOverText">Здоровье закончилось!</div>
-  <button onclick="restartGame()">НАЧАТЬ ЗАНОВО</button>
+<div id="gameOver" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); color: white; font-family: Arial; text-align: center; justify-content: center; align-items: center; flex-direction: column; z-index: 999;">
+  <h1>ИГРА ОКОНЧЕНА</h1>
+  <p>Вы погибли в космосе...</p>
+  <button id="restartButton" style="padding: 15px 30px; font-size: 18px; background: #ff6600; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    Начать заново
+  </button>
 </div>
 
 <div id="hud">
@@ -87,7 +90,7 @@
       <div class="item-count">0</div>
     </div>
     <div class="inventory-slot" data-type="water">
-      <div class="item-icon" style="color:#88ddff">▽</div>
+      <div class="item-icon" style="color:#88ddff">▽</div> <!-- Будет заменено на 3D-рендер -->
       <div class="slot-label">Вода</div>
       <div class="item-count">0</div>
     </div>
@@ -97,7 +100,7 @@
       <div class="item-count">0</div>
     </div>
     <div class="inventory-slot" data-type="screw">
-      <div class="item-icon" style="color:#ffcc99">✚</div>
+      <div class="item-icon" style="color:#ffcc99">✚</div> <!-- Будет заменено на 3D-рендер -->
       <div class="slot-label">Шурупы</div>
       <div class="item-count">0</div>
     </div>
